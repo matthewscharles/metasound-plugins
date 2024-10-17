@@ -47,12 +47,12 @@ namespace Metasound
 
             static const FVertexInterface Interface(
                 FInputVertexInterface(
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputSignal)),
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputTrigger)),
-                    TInputDataVertexModel<float>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputThreshold))
+                    TInputDataVertex<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputSignal)),
+                    TInputDataVertex<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputTrigger)),
+                    TInputDataVertex<float>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputThreshold))
                 ),
                 FOutputVertexInterface(
-                    TOutputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(OutputSignal))
+                    TOutputDataVertex<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(OutputSignal))
                 )
             );
 
@@ -63,26 +63,26 @@ namespace Metasound
         static const FNodeClassMetadata& GetNodeInfo()
         {
             auto CreateNodeClassMetadata = []() -> FNodeClassMetadata
-            {
-                FVertexInterface NodeInterface = DeclareVertexInterface();
-
-                FNodeClassMetadata Metadata
                 {
-                    FNodeClassName { StandardNodes::Namespace, "Sample and Hold", StandardNodes::AudioVariant }, 
-                    1, // Major Version
-                    0, // Minor Version
-                    METASOUND_LOCTEXT("SahNodeDisplayName", "SaH"),
-                    METASOUND_LOCTEXT("SahNodeDesc", "Samples an input signal when a trigger crosses an audio threshold, and holds it until the next trigger."),
-                    PluginAuthor,
-                    PluginNodeMissingPrompt,
-                    NodeInterface,
-                    { }, // Category Hierarchy 
-                    { }, // Keywords for searching
-                    FNodeDisplayStyle{}
-                };
+                    FVertexInterface NodeInterface = DeclareVertexInterface();
 
-                return Metadata;
-            };
+                    FNodeClassMetadata Metadata
+                    {
+                        FNodeClassName { StandardNodes::Namespace, "Sample and Hold", StandardNodes::AudioVariant },
+                        1, // Major Version
+                        0, // Minor Version
+                        METASOUND_LOCTEXT("SahNodeDisplayName", "SaH"),
+                        METASOUND_LOCTEXT("SahNodeDesc", "Samples an input signal when a trigger crosses an audio threshold, and holds it until the next trigger."),
+                        PluginAuthor,
+                        PluginNodeMissingPrompt,
+                        NodeInterface,
+                        { }, // Category Hierarchy 
+                        { }, // Keywords for searching
+                        FNodeDisplayStyle{}
+                    };
+
+                    return Metadata;
+                };
 
             static const FNodeClassMetadata Metadata = CreateNodeClassMetadata();
             return Metadata;
@@ -115,7 +115,7 @@ namespace Metasound
         }
 
         // Used to instantiate a new runtime instance of your node
-        static TUniquePtr<IOperator> CreateOperator(const FCreateOperatorParams& InParams, FBuildErrorArray& OutErrors)
+        static TUniquePtr<IOperator> CreateOperator(const FBuildOperatorParams& InParams, FBuildResults& OutResults)
         {
             using namespace SahNodeNames;
 
@@ -188,7 +188,8 @@ namespace Metasound
     METASOUND_REGISTER_NODE(FSahNode);
 }
 
-IMPLEMENT_MODULE(FDefaultModuleImpl, MetasoundBranches)
+// Module is implemented in MetasoundBranches.cpp
+
+//IMPLEMENT_MODULE(FDefaultModuleImpl, MetasoundBranches)
 
 #undef LOCTEXT_NAMESPACE
-
