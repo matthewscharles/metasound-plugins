@@ -13,7 +13,7 @@
 namespace Metasound
 {
     // Vertex Names - define the node's inputs and outputs here
-    namespace SahBankNodeNames
+    namespace SaHBankNodeNames
     {
         METASOUND_PARAM(InputSignal1, "Signal 1", "Input signal to sample 1.");
         METASOUND_PARAM(InputTrigger1, "Trigger 1", "Trigger signal 1.");
@@ -23,12 +23,14 @@ namespace Metasound
         METASOUND_PARAM(InputTrigger3, "Trigger 3", "Trigger signal 3.");
         METASOUND_PARAM(InputSignal4, "Signal 4", "Input signal to sample 4.");
         METASOUND_PARAM(InputTrigger4, "Trigger 4", "Trigger signal 4.");
-        METASOUND_PARAM(InputThreshold, "Threshold", "Threshold for triggers.");
+
 
         METASOUND_PARAM(OutputSignal1, "Output 1", "Sampled output signal.");
         METASOUND_PARAM(OutputSignal2, "Output 2", "Sampled output signal.");
         METASOUND_PARAM(OutputSignal3, "Output 3", "Sampled output signal.");
         METASOUND_PARAM(OutputSignal4, "Output 4", "Sampled output signal.");
+
+        METASOUND_PARAM(InputThreshold, "Threshold", "Threshold for triggers.");
     }
 
     // Operator Class - defines the way the node is described, created and executed
@@ -66,17 +68,13 @@ namespace Metasound
 
             for (int32 i = 0; i < NumChannels; ++i)
             {
-                InputInterface.Add(TInputDataVertexModel<FAudioBuffer>(
-                    *FString::Printf(TEXT("Signal %d"), i + 1),
-                    *FString::Printf(TEXT("Input signal to sample %d."), i + 1)));
+                FName SignalParamName = *FString::Printf(TEXT("Signal %d"), i + 1);
+                FName TriggerParamName = *FString::Printf(TEXT("Trigger %d"), i + 1);
+                FName OutputParamName = *FString::Printf(TEXT("Output %d"), i + 1);
 
-                InputInterface.Add(TInputDataVertexModel<FAudioBuffer>(
-                    *FString::Printf(TEXT("Trigger %d"), i + 1),
-                    *FString::Printf(TEXT("Trigger signal %d."), i + 1)));
-
-                OutputInterface.Add(TOutputDataVertexModel<FAudioBuffer>(
-                    *FString::Printf(TEXT("Output %d"), i + 1),
-                    *FString::Printf(TEXT("Sampled output signal %d."), i + 1)));
+                InputInterface.Add(TInputDataVertexModel<FAudioBuffer>(SignalParamName, FText::FromString(FString::Printf(TEXT("Input signal to sample %d."), i + 1))));
+                InputInterface.Add(TInputDataVertexModel<FAudioBuffer>(TriggerParamName, FText::FromString(FString::Printf(TEXT("Trigger signal %d."), i + 1))));
+                OutputInterface.Add(TOutputDataVertexModel<FAudioBuffer>(OutputParamName, FText::FromString(FString::Printf(TEXT("Sampled output signal %d."), i + 1))));
             }
 
             InputInterface.Add(TInputDataVertexModel<float>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputThreshold)));
@@ -94,7 +92,7 @@ namespace Metasound
 
                     FNodeClassMetadata Metadata;
 
-                    Metadata.ClassName = { StandardNodes::Namespace, TEXT("SaH Bank"), StandardNodes::AudioVariant };
+                    Metadata.ClassName = { StandardNodes::Namespace, TEXT("SaHBank"), StandardNodes::AudioVariant };
                     Metadata.MajorVersion = 1;
                     Metadata.MinorVersion = 0;
                     Metadata.DisplayName = METASOUND_LOCTEXT("SahBankNodeDisplayName", "SaH Bank");
@@ -126,7 +124,9 @@ namespace Metasound
                 InputDataReferences.AddDataReadReference(TriggerParamName, InputTriggers[i]);
             }
 
-            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputThreshold), InputThreshold);
+			FName InputThresholdName = *FString::Printf(TEXT("Threshold"));
+
+            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputThresholdName), InputThreshold);
 
             return InputDataReferences;
         }
@@ -173,7 +173,7 @@ namespace Metasound
             TDataReadReference<float> InputThreshold = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<float>(
                 InputInterface, METASOUND_GET_PARAM_NAME(InputThreshold), InParams.OperatorSettings);
 
-            return MakeUnique<FSahOperator>(InputSignals, InputTriggers, InputThreshold);
+            return MakeUnique<FSahBankOperator>(InputSignals, InputTriggers, InputThreshold);
         }
 
         // Primary node functionality
@@ -209,6 +209,7 @@ namespace Metasound
         // Inputs
         TArray<FAudioBufferReadRef> InputSignals;
         TArray<FAudioBufferReadRef> InputTriggers;
+        FFloatReadRef InputThreshold;
 
         // Outputs
         TArray<FAudioBufferWriteRef> OutputSignals;
