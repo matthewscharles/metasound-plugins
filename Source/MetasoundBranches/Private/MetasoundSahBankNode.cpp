@@ -37,64 +37,51 @@ namespace Metasound
     public:
         // Constructor
         FSahBankOperator(
-            const FAudioBufferReadRef& InSignal1,
-            const FAudioBufferReadRef& InTrigger1,
-            const FAudioBufferReadRef& InSignal2,
-            const FAudioBufferReadRef& InTrigger2,
-            const FAudioBufferReadRef& InSignal3,
-            const FAudioBufferReadRef& InTrigger3,
-            const FAudioBufferReadRef& InSignal4,
-            const FAudioBufferReadRef& InTrigger4,
+            const TArray<FAudioBufferReadRef>& InSignals,
+            const TArray<FAudioBufferReadRef>& InTriggers,
             const FFloatReadRef& InThreshold)
-            : InputSignal1(InSignal1)
-            , InputTrigger1(InTrigger1)
-            , InputSignal2(InSignal2)
-            , InputTrigger2(InTrigger2)
-            , InputSignal3(InSignal3)
-            , InputTrigger3(InTrigger3)
-            , InputSignal4(InSignal4)
-            , InputTrigger4(InTrigger4)
+            : InputSignals(InSignals)
+            , InputTriggers(InTriggers)
             , InputThreshold(InThreshold)
-            , OutputSignal1(FAudioBufferWriteRef::CreateNew(InSignal1->Num()))
-            , OutputSignal2(FAudioBufferWriteRef::CreateNew(InSignal2->Num()))
-            , OutputSignal3(FAudioBufferWriteRef::CreateNew(InSignal3->Num()))
-            , OutputSignal4(FAudioBufferWriteRef::CreateNew(InSignal4->Num()))
-            , SampledValue1(0.0f)
-            , SampledValue2(0.0f)
-            , SampledValue3(0.0f)
-            , SampledValue4(0.0f)
-            , PreviousTriggerValue1(0.0f)
-            , PreviousTriggerValue2(0.0f)
-            , PreviousTriggerValue3(0.0f)
-            , PreviousTriggerValue4(0.0f)
         {
+            int32 NumChannels = InputSignals.Num();
+            SampledValues.SetNumZeroed(NumChannels);
+            PreviousTriggerValues.SetNumZeroed(NumChannels);
+            OutputSignals.SetNum(NumChannels);
+
+            for (int32 i = 0; i < NumChannels; ++i)
+            {
+                OutputSignals[i] = FAudioBufferWriteRef::CreateNew(InputSignals[i]->Num());
+            }
         }
 
         // Helper function for constructing vertex interface
         static const FVertexInterface& DeclareVertexInterface()
         {
-            using namespace SahBankNodeNames;
+            using namespace SaHBankNodeNames;
 
-            static const FVertexInterface Interface(
-                FInputVertexInterface(
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputSignal1)),
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputTrigger1)),
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputSignal2)),
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputTrigger2)),
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputSignal3)),
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputTrigger3)),
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputSignal4)),
-                    TInputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputTrigger4)),
-                    TInputDataVertexModel<float>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputThreshold))
-                ),
-                FOutputVertexInterface(
-                    TOutputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(OutputSignal1)),
-                    TOutputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(OutputSignal2)),
-                    TOutputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(OutputSignal3)),
-                    TOutputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(OutputSignal4))
-                )
-            );
+            const int32 NumChannels = 4;
+            FInputVertexInterface InputInterface;
+            FOutputVertexInterface OutputInterface;
 
+            for (int32 i = 0; i < NumChannels; ++i)
+            {
+                InputInterface.Add(TInputDataVertexModel<FAudioBuffer>(
+                    *FString::Printf(TEXT("Signal %d"), i + 1),
+                    *FString::Printf(TEXT("Input signal to sample %d."), i + 1)));
+
+                InputInterface.Add(TInputDataVertexModel<FAudioBuffer>(
+                    *FString::Printf(TEXT("Trigger %d"), i + 1),
+                    *FString::Printf(TEXT("Trigger signal %d."), i + 1)));
+
+                OutputInterface.Add(TOutputDataVertexModel<FAudioBuffer>(
+                    *FString::Printf(TEXT("Output %d"), i + 1),
+                    *FString::Printf(TEXT("Sampled output signal %d."), i + 1)));
+            }
+
+            InputInterface.Add(TInputDataVertexModel<float>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputThreshold)));
+
+            static const FVertexInterface Interface(InputInterface, OutputInterface);
             return Interface;
         }
 
@@ -128,18 +115,17 @@ namespace Metasound
         // Allows MetaSound graph to interact with the node's inputs
         virtual FDataReferenceCollection GetInputs() const override
         {
-            using namespace SahBankNodeNames;
-
             FDataReferenceCollection InputDataReferences;
 
-            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputSignal1), InputSignal1);
-            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputTrigger1), InputTrigger1);
-            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputSignal2), InputSignal2);
-            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputTrigger2), InputTrigger2);
-            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputSignal3), InputSignal3);
-            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputTrigger3), InputTrigger3);
-            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputSignal4), InputSignal4);
-            InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputTrigger4), InputTrigger4);
+            for (int32 i = 0; i < InputSignals.Num(); ++i)
+            {
+                FName SignalParamName = *FString::Printf(TEXT("Signal %d"), i + 1);
+                FName TriggerParamName = *FString::Printf(TEXT("Trigger %d"), i + 1);
+
+                InputDataReferences.AddDataReadReference(SignalParamName, InputSignals[i]);
+                InputDataReferences.AddDataReadReference(TriggerParamName, InputTriggers[i]);
+            }
+
             InputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(InputThreshold), InputThreshold);
 
             return InputDataReferences;
@@ -148,14 +134,13 @@ namespace Metasound
         // Allows MetaSound graph to interact with the node's outputs
         virtual FDataReferenceCollection GetOutputs() const override
         {
-            using namespace SahBankNodeNames;
-
             FDataReferenceCollection OutputDataReferences;
 
-            OutputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(OutputSignal1), OutputSignal1);
-            OutputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(OutputSignal2), OutputSignal2);
-            OutputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(OutputSignal3), OutputSignal3);
-            OutputDataReferences.AddDataReadReference(METASOUND_GET_PARAM_NAME(OutputSignal4), OutputSignal4);
+            for (int32 i = 0; i < OutputSignals.Num(); ++i)
+            {
+                FName OutputParamName = *FString::Printf(TEXT("Output %d"), i + 1);
+                OutputDataReferences.AddDataReadReference(OutputParamName, OutputSignals[i]);
+            }
 
             return OutputDataReferences;
         }
@@ -163,135 +148,75 @@ namespace Metasound
         // Used to instantiate a new runtime instance of the node
         static TUniquePtr<IOperator> CreateOperator(const FCreateOperatorParams& InParams, FBuildErrorArray& OutErrors)
         {
-            using namespace SahBankNodeNames;
+            using namespace SaHBankNodeNames;
 
             const Metasound::FDataReferenceCollection& InputCollection = InParams.InputDataReferences;
             const Metasound::FInputVertexInterface& InputInterface = DeclareVertexInterface().GetInputInterface();
 
-            TDataReadReference<FAudioBuffer> InputSignal1 = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(InputInterface, METASOUND_GET_PARAM_NAME(InputSignal1), InParams.OperatorSettings);
-            TDataReadReference<FAudioBuffer> InputTrigger1 = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(InputInterface, METASOUND_GET_PARAM_NAME(InputTrigger1), InParams.OperatorSettings);
-            TDataReadReference<FAudioBuffer> InputSignal2 = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(InputInterface, METASOUND_GET_PARAM_NAME(InputSignal2), InParams.OperatorSettings);
-            TDataReadReference<FAudioBuffer> InputTrigger2 = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(InputInterface, METASOUND_GET_PARAM_NAME(InputTrigger2), InParams.OperatorSettings);
-            TDataReadReference<FAudioBuffer> InputSignal3 = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(InputInterface, METASOUND_GET_PARAM_NAME(InputSignal3), InParams.OperatorSettings);
-            TDataReadReference<FAudioBuffer> InputTrigger3 = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(InputInterface, METASOUND_GET_PARAM_NAME(InputTrigger3), InParams.OperatorSettings);
-            TDataReadReference<FAudioBuffer> InputSignal4 = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(InputInterface, METASOUND_GET_PARAM_NAME(InputSignal4), InParams.OperatorSettings);
-            TDataReadReference<FAudioBuffer> InputTrigger4 = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(InputInterface, METASOUND_GET_PARAM_NAME(InputTrigger4), InParams.OperatorSettings);
-            TDataReadReference<float> InputThreshold = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<float>(InputInterface, METASOUND_GET_PARAM_NAME(InputThreshold), InParams.OperatorSettings);
+            TArray<FAudioBufferReadRef> InputSignals;
+            TArray<FAudioBufferReadRef> InputTriggers;
 
-            return MakeUnique<FSahBankOperator>(
-                InputSignal1, 
-                InputTrigger1, 
-                InputSignal2, 
-                InputTrigger2, 
-                InputSignal3, 
-                InputTrigger3, 
-                InputSignal4, 
-                InputTrigger4, 
-                InputThreshold
-            );
+            const int32 NumChannels = 4;
+
+            for (int32 i = 0; i < NumChannels; ++i)
+            {
+                FName SignalParamName = *FString::Printf(TEXT("Signal %d"), i + 1);
+                FName TriggerParamName = *FString::Printf(TEXT("Trigger %d"), i + 1);
+
+                InputSignals.Add(InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(
+                    InputInterface, SignalParamName, InParams.OperatorSettings));
+
+                InputTriggers.Add(InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<FAudioBuffer>(
+                    InputInterface, TriggerParamName, InParams.OperatorSettings));
+            }
+
+            TDataReadReference<float> InputThreshold = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<float>(
+                InputInterface, METASOUND_GET_PARAM_NAME(InputThreshold), InParams.OperatorSettings);
+
+            return MakeUnique<FSahOperator>(InputSignals, InputTriggers, InputThreshold);
         }
 
         // Primary node functionality
         void Execute()
         {
-            // Should be arbitrary which signal I get this from...
-            int32 NumFrames = InputSignal1->Num();
-           
-            const float* SignalData1 = InputSignal1->GetData();
-            const float* TriggerData1 = InputTrigger1->GetData();
-            float* OutputData1 = OutputSignal1->GetData();
-            
-            const float* SignalData2 = InputSignal2->GetData();
-            const float* TriggerData2 = InputTrigger2->GetData();
-            float* OutputData2 = OutputSignal2->GetData();
-            
-            const float* SignalData3 = InputSignal3->GetData();
-            const float* TriggerData3 = InputTrigger3->GetData();
-            float* OutputData3 = OutputSignal3->GetData();
-            
-            const float* SignalData4 = InputSignal4->GetData();
-            const float* TriggerData4 = InputTrigger4->GetData();
-            float* OutputData4 = OutputSignal4->GetData();
-
+            int32 NumFrames = InputSignals[0]->Num();
+            int32 NumChannels = InputSignals.Num();
             float Threshold = *InputThreshold;
 
-            for (int32 i = 0; i < NumFrames; ++i)
+            for (int32 channel = 0; channel < NumChannels; ++channel)
             {
-                // 1
-                float CurrentTriggerValue1 = TriggerData1[i];
+                const float* SignalData = InputSignals[channel]->GetData();
+                const float* TriggerData = InputTriggers[channel]->GetData();
+                float* OutputData = OutputSignals[channel]->GetData();
 
-                if (PreviousTriggerValue1 < Threshold && CurrentTriggerValue1 >= Threshold)
+                for (int32 i = 0; i < NumFrames; ++i)
                 {
-                    SampledValue1 = SignalData1[i];
+                    float CurrentTriggerValue = TriggerData[i];
+
+                    if (PreviousTriggerValues[channel] < Threshold && CurrentTriggerValue >= Threshold)
+                    {
+                        SampledValues[channel] = SignalData[i];
+                    }
+
+                    OutputData[i] = SampledValues[channel];
+                    PreviousTriggerValues[channel] = CurrentTriggerValue;
                 }
-
-                OutputData1[i] = SampledValue1;
-                PreviousTriggerValue1 = CurrentTriggerValue1;
-                
-                // 2
-                float CurrentTriggerValue2 = TriggerData2[i];
-
-                if (PreviousTriggerValue2 < Threshold && CurrentTriggerValue2 >= Threshold)
-                {
-                    SampledValue2 = SignalData2[i];
-                }
-
-                OutputData2[i] = SampledValue2;
-                PreviousTriggerValue2 = CurrentTriggerValue2;
-                
-                // 3
-                float CurrentTriggerValue3 = TriggerData3[i];
-
-                if (PreviousTriggerValue3 < Threshold && CurrentTriggerValue3 >= Threshold)
-                {
-                    SampledValue3 = SignalData3[i];
-                }
-
-                OutputData3[i] = SampledValue3;
-                PreviousTriggerValue3 = CurrentTriggerValue3;
-                
-                // 4
-                float CurrentTriggerValue4 = TriggerData4[i];
-
-                if (PreviousTriggerValue4 < Threshold && CurrentTriggerValue4 >= Threshold)
-                {
-                    SampledValue4 = SignalData4[i];
-                }
-
-                OutputData4[i] = SampledValue4;
-                PreviousTriggerValue4 = CurrentTriggerValue4;
-                
             }
         }
 
     private:
 
         // Inputs
-        FAudioBufferReadRef InputSignal1;
-        FAudioBufferReadRef InputTrigger1;
-        FAudioBufferReadRef InputSignal2;
-        FAudioBufferReadRef InputTrigger2;
-        FAudioBufferReadRef InputSignal3;
-        FAudioBufferReadRef InputTrigger3;
-        FAudioBufferReadRef InputSignal4;
-        FAudioBufferReadRef InputTrigger4;
-        FFloatReadRef InputThreshold;
+        TArray<FAudioBufferReadRef> InputSignals;
+        TArray<FAudioBufferReadRef> InputTriggers;
 
         // Outputs
-        FAudioBufferWriteRef OutputSignal1;
-        FAudioBufferWriteRef OutputSignal2;
-        FAudioBufferWriteRef OutputSignal3;
-        FAudioBufferWriteRef OutputSignal4;
+        TArray<FAudioBufferWriteRef> OutputSignals;
 
         // Internal variables
-        float SampledValue1;
-        float SampledValue2;
-        float SampledValue3;
-        float SampledValue4;
-        float PreviousTriggerValue1;
-        float PreviousTriggerValue2;
-        float PreviousTriggerValue3;
-        float PreviousTriggerValue4;
+        TArray<float> SampledValues;
+        TArray<float> PreviousTriggerValues;
+    
     };
 
     // Node Class - Inheriting from FNodeFacade is recommended for nodes that have a static FVertexInterface
