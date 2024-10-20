@@ -113,6 +113,8 @@ namespace Metasound
         // Allows MetaSound graph to interact with the node's inputs
         virtual FDataReferenceCollection GetInputs() const override
         {
+            using namespace SahBankNodeNames;
+
             FDataReferenceCollection InputDataReferences;
 
             for (int32 i = 0; i < InputSignals.Num(); ++i)
@@ -132,6 +134,7 @@ namespace Metasound
         // Allows MetaSound graph to interact with the node's outputs
         virtual FDataReferenceCollection GetOutputs() const override
         {
+			using namespace SahBankNodeNames;
             FDataReferenceCollection OutputDataReferences;
 
             for (int32 i = 0; i < OutputSignals.Num(); ++i)
