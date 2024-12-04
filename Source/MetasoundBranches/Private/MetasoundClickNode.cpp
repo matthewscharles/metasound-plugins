@@ -5,8 +5,9 @@
 #include "MetasoundStandardNodesNames.h"     // StandardNodes namespace
 #include "MetasoundFacade.h"                 // FNodeFacade class, eliminates the need for a fair amount of boilerplate code
 #include "MetasoundParamHelper.h"            // METASOUND_PARAM and METASOUND_GET_PARAM family of macros
-#include "Math/UnrealMathUtility.h"          // For FMath functions
-#include "Misc/DateTime.h"                   // For FDateTime::UtcNow()
+#include "MetasoundDataReference.h"          // For FDataReferenceCollection
+#include "MetasoundVertexData.h"             // For FInputVertexInterfaceData
+#include "MetasoundOperatorInterface.h"      // For FBuildOperatorParams
 
 // Required for ensuring the node is supported by all languages in engine. Must be unique per MetaSound.
 #define LOCTEXT_NAMESPACE "MetasoundStandardNodes_ClickNode"
@@ -44,11 +45,11 @@ namespace Metasound
 
             static const FVertexInterface Interface(
                 FInputVertexInterface(
-                    TInputDataVertexModel<FTrigger>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputTrigger)),
-                    TInputDataVertexModel<bool>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputBiPolar), true)
+                    TInputDataVertex<FTrigger>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputTrigger)),
+                    TInputDataVertex<bool>(METASOUND_GET_PARAM_NAME_AND_METADATA(InputBiPolar), true)
                 ),
                 FOutputVertexInterface(
-                    TOutputDataVertexModel<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(OutputImpulse))
+                    TOutputDataVertex<FAudioBuffer>(METASOUND_GET_PARAM_NAME_AND_METADATA(OutputImpulse))
                 )
             );
 
@@ -105,15 +106,18 @@ namespace Metasound
         }
 
         // Used to instantiate a new runtime instance of the node
-        static TUniquePtr<IOperator> CreateOperator(const FCreateOperatorParams& InParams, FBuildErrorArray& OutErrors)
+        static TUniquePtr<IOperator> CreateOperator(const FBuildOperatorParams& InParams, FBuildResults& OutResults)
         {
+            using namespace Metasound;
             using namespace ClickNodeNames;
 
-            const Metasound::FDataReferenceCollection& InputCollection = InParams.InputDataReferences;
-            const Metasound::FInputVertexInterface& InputInterface = DeclareVertexInterface().GetInputInterface();
+            const FInputVertexInterfaceData& InputData = InParams.InputData;
 
-            TDataReadReference<FTrigger> InputTrigger = InputCollection.GetDataReadReferenceOrConstruct<FTrigger>(METASOUND_GET_PARAM_NAME(InputTrigger), InParams.OperatorSettings);
-            TDataReadReference<bool> InputBiPolar = InputCollection.GetDataReadReferenceOrConstructWithVertexDefault<bool>(InputInterface, METASOUND_GET_PARAM_NAME(InputBiPolar), InParams.OperatorSettings);
+            TDataReadReference<FTrigger> InputTrigger = InputData.GetOrConstructDataReadReference<FTrigger>(
+                METASOUND_GET_PARAM_NAME(InputTrigger), InParams.OperatorSettings);
+
+            TDataReadReference<bool> InputBiPolar = InputData.GetOrCreateDefaultDataReadReference<bool>(
+                METASOUND_GET_PARAM_NAME(InputBiPolar), InParams.OperatorSettings, true);
 
             return MakeUnique<FClickOperator>(
                 InParams.OperatorSettings,
