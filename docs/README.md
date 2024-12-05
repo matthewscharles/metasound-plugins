@@ -1,15 +1,14 @@
 # Documentation
-As a starting point for the documentation, I'm throwing together some of my notes on the custom nodes.  I'll try to break a few ideas down along the way, partly to consolidate my own learning.
-
-This was my first attempt at writing a plugin for Unreal Engine, and with hindsight I would have tried a more generic model to start with.
-In particular, I still need to work out how best to approach the header files -- this got mixed up with troubleshooting the build process.
+As a starting point for the documentation, I'm throwing together some of my notes on the custom nodes.
 
 If you're browsing the source code and see some odd choices, please let me know!
 
-## Audio Rate Sample and Hold
+## SaH: Audio Rate Sample and Hold
 
 ### Function
 The output signal is held at the last value of the input signal when the trigger signal crosses a threshold.
+
+![Signal flow of a sample and hold module](./SaH_flow.png)
 
 The existing sample and hold function in Metasound takes an audio rate signal as input, and a trigger signal as float.
 
@@ -32,12 +31,11 @@ A purely audio-rate version seemed like a good starting point for my first custo
 ### C++ Implementation (Custom Metasound Node)
 
 I used Anna Lantz's tutorial [Creating MetaSound Nodes in C++ Quickstart](https://dev.epicgames.com/community/learning/tutorials/ry7p/unreal-engine-creating-metasound-nodes-in-c-quickstart) as a starting point.
-According to the tutorial, this can live in a single .cpp file, but I found that I needed to include a header during troubleshooting (the issue might have been in the build process).
 
 Most of the .cpp file is occupied by setting up the node and its pins (inlets/outlets), and registering the node. 
 The implementation of the sample and hold process itself is quite straightforward, as long as you don't mind pointers (which are pretty much everywhere in this context anyway).
 
-In the following code snippets, we could think of the constructor and execute function as "setup" and "loop" respectively.
+We could think of the constructor and execute function as "setup" and "loop" respectively.
 
 #### Constructor
 ```C++
@@ -51,19 +49,17 @@ FSahOperator(
     :
     
     // Initialisation list
-    InputSignal(InSignal),
-    InputTrigger(InTrigger),
-    InputThreshold(InThreshold),
-    OutputSignal(FAudioBufferWriteRef::CreateNew(InSignal->Num())),
-    SampledValue(0.0f),
-    PreviousTriggerValue(0.0f)
+    , InputSignal(InSignal)
+    , InputTrigger(InTrigger)
+    , InputThreshold(InThreshold)
+    , OutputSignal(FAudioBufferWriteRef::CreateNew(InSignal->Num()))
+    , SampledValue(0.0f)
+    , PreviousTriggerValue(0.0f)
     {
         // Nothing to do here...
     }
 ```
-After the usual parameter list, we also have an initialisation list which takes care of setting the member variables. In this case, this handles everything we'd otherwise do in the constructor body in other langauges.
-
-I've modified the formatting in the above example for anyone less familiar with C++ (the convention is to put the commas at the start of the line, in line with the colon, which took me a while to get used to having started in Java).   
+After the usual parameter list, we also have an initialisation list which takes care of setting the member variables. This handles everything we'd otherwise do in the constructor body in other languages.  The convention for initialisation lists is to put the commas at the start of the line, in line with the colon.
 
 The constructor has three parameters: pointers to the buffers for input signal, the trigger signal, and the threshold. 
 `SampledValue` and `PreviousTriggerValue` are just regular float variables.
@@ -100,7 +96,9 @@ void Execute()
     }
 ```
 
-Although we're dealing with individual samples, they come in and out of the `Execute` function as audio buffers, also known as blocks. Depending on the buffer size of the host, the size of this block might range from 32 to 2048 samples (this is the same buffer size we typically modify in audio software to balance latency and performance).
+Although we're dealing with individual samples, they come in and out of the `Execute` function as blocks (audio buffers). 
+
+Depending on the buffer size of the host, the size of this block might range from 32 to 2048 samples. This is the same buffer size we typically modify in audio software to balance latency and performance.
 
 A block is broken down into "frames", each of which represents a sample point when information is read from each of the input buffers.[^1]
 
@@ -109,7 +107,7 @@ To process the signal, we therefore need to loop through these frames during eac
 `SignalData` and `TriggerData` point to arrays of floats, as returned by `FAudioBufferReadRef`.
 
 #### Misc Notes
-Some supplementary notes on implementing the sample and hold node in Pd can be found [here](./SaH_Pd.md).
+Some supplementary notes on implementing the sample and hold node in Pure Data can be found [here](./Pd_implementations/SaH_Pd.md).
 
 I'm attempting to follow [Epic's coding standards](https://dev.epicgames.com/documentation/en-us/unreal-engine/epic-cplusplus-coding-standard-for-unreal-engine?application_version=5.4) to the best of my understanding, for example:
 - use PascalCase throughout
@@ -118,4 +116,4 @@ I'm attempting to follow [Epic's coding standards](https://dev.epicgames.com/doc
 
 ---
 
-[^1]: Not to be confused with video frames, etc. although the concept is similar.
+[^1]: Not to be confused with video frames elsewhere within the engine.

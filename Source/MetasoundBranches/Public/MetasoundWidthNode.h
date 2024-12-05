@@ -5,9 +5,9 @@
 
 namespace MetasoundBranches
 {
-    class FMetasoundSahBankNode : public Metasound::FNode
+    class FMetasoundWidthNode : public Metasound::FNode
     {
     public:
-        FMetasoundSahBankNode();
+        FMetasoundWidthNode();
     };
 }

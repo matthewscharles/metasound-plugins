@@ -14,13 +14,14 @@
     "IsExperimentalVersion": false,
     "Installed": false,
     "SupportedTargetPlatforms": [
-        "Win64"
+        "Win64",
+        "Mac"
     ],
     "Modules": [{
             "Name": "MetasoundBranches",
             "Type": "Runtime",
             "LoadingPhase": "EarliestPossible",
-            "PlatformAllowList":["Win64"]    
+            "PlatformAllowList":["Win64", "Mac"]    
     }],
     "Plugins": [{
         "Name": "Metasound",
