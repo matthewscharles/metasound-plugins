@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" viewBox="-1481 1306.75 433 271" width="433" height="271">
+  <defs>
+    <linearGradient x1="0" x2="1" id="Gradient" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#181a19"/>
+      <stop offset=".9079928" stop-color="#262726"/>
+      <stop offset="1" stop-color="#333"/>
+    </linearGradient>
+    <linearGradient id="Obj_Gradient" xl:href="#Gradient" gradientTransform="translate(-1264.5 1577.25) rotate(-90) scale(270)"/>
+  </defs>
+  <g id="Canvas_1" stroke-opacity="1" fill-opacity="1" stroke-dasharray="none" fill="none" stroke="none">
+    <title>Canvas 1</title>
+    <g id="Canvas_1_Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_870">
+        <g id="Graphic_829">
+          <path d="M -1465.5 1307.25 L -1063.5 1307.25 C -1055.2157 1307.25 -1048.5 1313.9657 -1048.5 1322.25 L -1048.5 1562.25 C -1048.5 1570.5343 -1055.2157 1577.25 -1063.5 1577.25 L -1465.5 1577.25 C -1473.7843 1577.25 -1480.5 1570.5343 -1480.5 1562.25 L -1480.5 1322.25 C -1480.5 1313.9657 -1473.7843 1307.25 -1465.5 1307.25 Z" fill="url(#Obj_Gradient)"/>
+          <path d="M -1465.5 1307.25 L -1063.5 1307.25 C -1055.2157 1307.25 -1048.5 1313.9657 -1048.5 1322.25 L -1048.5 1562.25 C -1048.5 1570.5343 -1055.2157 1577.25 -1063.5 1577.25 L -1465.5 1577.25 C -1473.7843 1577.25 -1480.5 1570.5343 -1480.5 1562.25 L -1480.5 1322.25 C -1480.5 1313.9657 -1473.7843 1307.25 -1465.5 1307.25 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        </g>
+        <g id="Graphic_828">
+          <text transform="translate(-1379.543 1320.7722)" fill="#a9ec9f">
+            <tspan font-family="Roboto" font-weight="bold" font-size="24" fill="#a9ec9f" x="0" y="22" xml:space="preserve">ƒ</tspan>
+            <tspan font-family="Roboto" font-size="24" fill="#7f7f7f" y="22" xml:space="preserve"> </tspan>
+            <tspan font-family="Roboto" font-size="24" fill="#7fb276" y="22" xml:space="preserve">Stereo Cross Router</tspan>
+          </text>
+        </g>
+        <g id="Group_825">
+          <title>Audio</title>
+          <g id="Graphic_827">
+            <ellipse cx="-1088.3657" cy="1390.0623" rx="11.6606870130669" ry="11.6109400548198" fill="black"/>
+            <ellipse cx="-1088.3657" cy="1390.0623" rx="11.6606870130669" ry="11.6109400548198" stroke="#cd79cb" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+          </g>
+          <g id="Graphic_826">
+            <path d="M -1073.77 1383.5503 L -1067.1067 1390.0623 L -1073.77 1396.5742 Z" fill="#ce78ca"/>
+            <path d="M -1073.77 1383.5503 L -1067.1067 1390.0623 L -1073.77 1396.5742 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="0"/>
+          </g>
+        </g>
+        <g id="Graphic_824">
+          <text transform="translate(-1191.9254 1376.0623)" fill="white">
+            <tspan font-family="Roboto" font-size="24" fill="white" x="0" y="22" xml:space="preserve">Out 1 L</tspan>
+          </text>
+        </g>
+        <g id="Graphic_823">
+          <text transform="translate(-1415.5308 1376.0623)" fill="white">
+            <tspan font-family="Roboto" font-size="24" fill="white" x="0" y="22" xml:space="preserve">In L</tspan>
+          </text>
+        </g>
+        <g id="Group_820">
+          <title>Audio</title>
+          <g id="Graphic_822">
+            <ellipse cx="-1446.1697" cy="1390.0623" rx="11.6606870130669" ry="11.6109400548198" fill="black"/>
+            <ellipse cx="-1446.1697" cy="1390.0623" rx="11.6606870130669" ry="11.6109400548198" stroke="#cd79cb" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+          </g>
+          <g id="Graphic_821">
+            <path d="M -1431.574 1383.5503 L -1424.9107 1390.0623 L -1431.574 1396.5742 Z" fill="#ce78ca"/>
+            <path d="M -1431.574 1383.5503 L -1424.9107 1390.0623 L -1431.574 1396.5742 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="0"/>
+          </g>
+        </g>
+        <g id="Graphic_819">
+          <text transform="translate(-1415.5308 1429.1408)" fill="white">
+            <tspan font-family="Roboto" font-size="24" fill="white" x="0" y="22" xml:space="preserve">In R</tspan>
+          </text>
+        </g>
+        <g id="Group_816">
+          <title>Audio</title>
+          <g id="Graphic_818">
+            <ellipse cx="-1446.1697" cy="1443.1408" rx="11.6606870130669" ry="11.6109400548198" fill="black"/>
+            <ellipse cx="-1446.1697" cy="1443.1408" rx="11.6606870130669" ry="11.6109400548198" stroke="#cd79cb" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+          </g>
+          <g id="Graphic_817">
+            <path d="M -1431.574 1436.6288 L -1424.9107 1443.1408 L -1431.574 1449.6527 Z" fill="#ce78ca"/>
+            <path d="M -1431.574 1436.6288 L -1424.9107 1443.1408 L -1431.574 1449.6527 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="0"/>
+          </g>
+        </g>
+        <g id="Group_805">
+          <title>Float</title>
+          <g id="Graphic_807">
+            <ellipse cx="-1446.1697" cy="1496.1156" rx="11.6606870130669" ry="11.6109400548198" fill="black"/>
+            <ellipse cx="-1446.1697" cy="1496.1156" rx="11.6606870130669" ry="11.6109400548198" stroke="#9df945" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+          </g>
+          <g id="Graphic_806">
+            <path d="M -1431.574 1489.6037 L -1424.9107 1496.1156 L -1431.574 1502.6276 Z" fill="#9df945"/>
+            <path d="M -1431.574 1489.6037 L -1424.9107 1496.1156 L -1431.574 1502.6276 Z" stroke="#9df945" stroke-linecap="round" stroke-linejoin="round" stroke-width="0"/>
+          </g>
+        </g>
+        <g id="Graphic_804">
+          <text transform="translate(-1412.1992 1482.1156)" fill="white">
+            <tspan font-family="Roboto" font-size="24" fill="white" x="0" y="22" xml:space="preserve">Crossfade</tspan>
+          </text>
+        </g>
+        <g id="Graphic_803">
+          <path d="M -1292.4814 1477.4398 L -1252.9492 1477.4398 C -1251.2924 1477.4398 -1249.9492 1478.783 -1249.9492 1480.4398 L -1249.9492 1507.6139 C -1249.9492 1509.2708 -1251.2924 1510.6139 -1252.9492 1510.6139 L -1292.4814 1510.6139 C -1294.1382 1510.6139 -1295.4814 1509.2708 -1295.4814 1507.6139 L -1295.4814 1480.4398 C -1295.4814 1478.783 -1294.1382 1477.4398 -1292.4814 1477.4398 Z" fill="black"/>
+          <path d="M -1292.4814 1477.4398 L -1252.9492 1477.4398 C -1251.2924 1477.4398 -1249.9492 1478.783 -1249.9492 1480.4398 L -1249.9492 1507.6139 C -1249.9492 1509.2708 -1251.2924 1510.6139 -1252.9492 1510.6139 L -1292.4814 1510.6139 C -1294.1382 1510.6139 -1295.4814 1509.2708 -1295.4814 1507.6139 L -1295.4814 1480.4398 C -1295.4814 1478.783 -1294.1382 1477.4398 -1292.4814 1477.4398 Z" stroke="#d7d5d5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(-1290.4814 1480.0269)" fill="#bfbebf">
+            <tspan font-family="Roboto" font-size="24" fill="#bfbebf" x="1.1313019" y="22" xml:space="preserve">0.5</tspan>
+          </text>
+        </g>
+        <g id="Group_800">
+          <title>Audio</title>
+          <g id="Graphic_802">
+            <ellipse cx="-1088.3657" cy="1437.8575" rx="11.6606870130669" ry="11.6109400548198" fill="black"/>
+            <ellipse cx="-1088.3657" cy="1437.8575" rx="11.6606870130669" ry="11.6109400548198" stroke="#cd79cb" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+          </g>
+          <g id="Graphic_801">
+            <path d="M -1073.77 1431.3456 L -1067.1067 1437.8575 L -1073.77 1444.3695 Z" fill="#ce78ca"/>
+            <path d="M -1073.77 1431.3456 L -1067.1067 1437.8575 L -1073.77 1444.3695 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="0"/>
+          </g>
+        </g>
+        <g id="Graphic_799">
+          <text transform="translate(-1191.9493 1423.8575)" fill="white">
+            <tspan font-family="Roboto" font-size="24" fill="white" x="0" y="22" xml:space="preserve">Out 1 R</tspan>
+          </text>
+        </g>
+        <g id="Group_862">
+          <title>Audio</title>
+          <g id="Graphic_864">
+            <ellipse cx="-1088.3657" cy="1489.0508" rx="11.660687013067" ry="11.6109400548198" fill="black"/>
+            <ellipse cx="-1088.3657" cy="1489.0508" rx="11.660687013067" ry="11.6109400548198" stroke="#cd79cb" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+          </g>
+          <g id="Graphic_863">
+            <path d="M -1073.77 1482.5388 L -1067.1067 1489.0508 L -1073.77 1495.5627 Z" fill="#ce78ca"/>
+            <path d="M -1073.77 1482.5388 L -1067.1067 1489.0508 L -1073.77 1495.5627 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="0"/>
+          </g>
+        </g>
+        <g id="Graphic_865">
+          <text transform="translate(-1191.9254 1475.0508)" fill="white">
+            <tspan font-family="Roboto" font-size="24" fill="white" x="0" y="22" xml:space="preserve">Out 1 L</tspan>
+          </text>
+        </g>
+        <g id="Group_866">
+          <title>Audio</title>
+          <g id="Graphic_868">
+            <ellipse cx="-1088.3657" cy="1536.846" rx="11.660687013067" ry="11.6109400548198" fill="black"/>
+            <ellipse cx="-1088.3657" cy="1536.846" rx="11.660687013067" ry="11.6109400548198" stroke="#cd79cb" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+          </g>
+          <g id="Graphic_867">
+            <path d="M -1073.77 1530.334 L -1067.1067 1536.846 L -1073.77 1543.358 Z" fill="#ce78ca"/>
+            <path d="M -1073.77 1530.334 L -1067.1067 1536.846 L -1073.77 1543.358 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="0"/>
+          </g>
+        </g>
+        <g id="Graphic_869">
+          <text transform="translate(-1191.9493 1522.846)" fill="white">
+            <tspan font-family="Roboto" font-size="24" fill="white" x="0" y="22" xml:space="preserve">Out 1 R</tspan>
+          </text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
